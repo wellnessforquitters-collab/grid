@@ -231,6 +231,7 @@ input[type=date].in{-webkit-appearance:none;appearance:none;min-height:50px;text
 .hint{font-size:13px;color:var(--muted);margin:10px 0 0;line-height:1.45}
 .stuckln{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted)}
 .stuckln b{color:var(--acc);font-weight:500}
+.gtools{display:flex;gap:8px}.gt{flex:1;border:1px solid var(--fg);background:none;color:var(--fg);font:inherit;font-size:14px;padding:10px;cursor:pointer}.gt.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .foot{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:14px;padding-top:6px}
 
 /* ===== card of the day ===== */
@@ -2999,7 +3000,9 @@ function pageGrid(){
   return `<div class="pg">
     <div class="ph"><p class="kick">✦ day ${day}${L!==null?` · ${L>0?L+" days left":L===0?"it's the day":"past your date"}`:""}</p><h1>${esc(G.goal)}</h1></div>
     <div style="display:flex;flex-direction:column;gap:10px">${gridHTML(P.st)}
-      <div class="blockhint"><div class="legend"><span><i class="sq"></i>not yet</span><span><i class="sq s1"></i>trying</span><span><i class="sq s2"></i>part of me</span></div></div></div>
+      <div class="blockhint"><div class="legend"><span><i class="sq"></i>not yet</span><span><i class="sq s1"></i>trying</span><span><i class="sq s2"></i>part of me</span></div></div>
+      ${gridEdit?'<p class="small" style="margin:0;color:var(--acc)">✦ tap any cell to rename it</p>':""}
+      <div class="gtools"><button class="gt${gridEdit?" on":""}" id="ged">${gridEdit?"done":"edit cells"}</button><button class="gt" id="grs">reset grid</button></div></div>
     <div class="dcard${pulled()?" flip":""}" id="dcard" role="button" aria-label="today's card"><div class="dc-in">
       <div class="dc-back"><span class="st tl">✦</span><span class="st tr">✦</span><span class="st bl">✦</span><span class="st br">✦</span><span class="dc-k">✦ today's card</span><span class="dc-t">tap to pull it</span></div>
       <div class="dc-front"><span class="dc-k">✦ ${nice(today())}</span><p class="dc-m">${esc(msg)}</p><span class="dc-s">a new one tomorrow</span></div></div></div>
@@ -3007,7 +3010,7 @@ function pageGrid(){
       ${best>=0?`<div class="pline"><span>strongest <b>${esc(G.pillars[best])}</b></span>${stuck>=0?`<span>stuck <b class="r">${esc(G.pillars[stuck])}</b></span>`:""}</div>`:""}
       <div class="pbars">${G.pillars.map((n,p)=>{const pc=Math.round(sums[p]/16*100);return`<button class="pbar" data-area="${p}"><span class="n">${esc(n)}</span><span class="t"><i style="width:${pc}%"></i></span><span class="p">${pc}%</span></button>`}).join("")}</div>
     </div>
-    <div class="foot"><button class="link" id="wp">wallpaper</button><button class="link" id="help2">how it works</button><button class="link" id="mv">${/iphone|ipad|android/i.test(navigator.userAgent)?"save my link":"open on phone"}</button><a class="link" href="${FREE_GRID_URL}">edit grid</a></div>
+    <div class="foot"><button class="link" id="wp">wallpaper</button><button class="link" id="help2">how it works</button><button class="link" id="mv">${/iphone|ipad|android/i.test(navigator.userAgent)?"save my link":"open on phone"}</button></div>
   </div>`}
 
 const REST=["a walk without your phone","20-minute nap","bath and an early night","one episode, zero guilt","cancel one plan","stretch on the floor","read in the sun"];
@@ -3081,8 +3084,13 @@ function bindPages(){const tr=$("#ptr"),v=$("#pages");
     if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.4)go(P.page+(dx<0?1:-1))},{passive:true});
 }
 addEventListener("resize",()=>{if(window._fit)window._fit()});
+let gridEdit=false;
 function bindGrid(){
-  document.querySelectorAll("#app .grid .cell[data-b]").forEach(el=>el.onclick=()=>{const b=+el.dataset.b;if(b===4)return;openZoom(AROUND.indexOf(b),el)});
+  document.querySelectorAll("#app .grid .cell[data-b]").forEach(el=>el.onclick=()=>{const b=+el.dataset.b;
+    if(gridEdit)return renameAny(b,+el.dataset.c);
+    if(b===4)return;openZoom(AROUND.indexOf(b),el)});
+  const ge=$("#ged");if(ge)ge.onclick=()=>{gridEdit=!gridEdit;keep()};
+  const gr=$("#grs");if(gr)gr.onclick=openResetGrid;
   document.querySelectorAll("#app [data-area]").forEach(el=>el.onclick=()=>openZoom(+el.dataset.area));
   const c=$("#dcard");if(c)c.onclick=()=>{if(c.classList.contains("flip"))return;c.classList.add("flip");P.cards[today()]=cardIndex();saveP();hapt();setTimeout(()=>window._fit&&window._fit(),650)};
   $("#wp").onclick=openWallpaper;$("#help2").onclick=()=>openHelp();$("#mv").onclick=openMove;
@@ -3168,6 +3176,22 @@ function renameCell(id){const[p,i]=id.split("-").map(Number);
   const inp=$("#rn");inp.focus();inp.select();
   $("#rx").onclick=closeSheet;
   $("#ro").onclick=()=>{const v=inp.value.trim();if(!v)return;G.actions[p][i]=v;saveG();closeSheet();renderZoom()}}
+
+/* rename any cell right on the grid: the goal, an area or an action */
+function renameAny(b,c){const x=cellInfo(b,c),max=x.k==="goal"?60:26;
+  openSheet(`<h2>${x.k==="goal"?"your goal":x.k==="hub"?"rename this area":"rename"}</h2><input class="f" id="rn" maxlength="${max}" value="${esc(x.t)}"><div class="row2"><button class="btn ghost" id="rx">cancel</button><button class="btn" id="ro">save</button></div>`);
+  const inp=$("#rn");inp.focus();inp.select();$("#rx").onclick=closeSheet;
+  const save=()=>{const v=inp.value.trim();if(!v)return;
+    if(x.k==="goal")G.goal=v;else if(x.k==="hub")G.pillars[x.p]=v;else{const[p,i]=x.id.split("-").map(Number);G.actions[p][i]=v}
+    saveG();saveP();closeSheet();keep();toast("saved ✦")};
+  $("#ro").onclick=save;inp.onkeydown=e=>{if(e.key==="Enter")save()}}
+/* reset the whole grid: make a new one from scratch, pro stays unlocked */
+function openResetGrid(){
+  openSheet(`<h2>reset your grid?</h2><p class="small muted" style="margin:0">you'll make a brand new grid from scratch. your marks and your plan will be deleted. grid pro stays unlocked, and your new grid comes straight back here.</p>
+  <div class="row2"><button class="btn ghost" id="rx2">cancel</button><button class="btn red" id="ro2">reset</button></div>`);
+  $("#rx2").onclick=closeSheet;
+  $("#ro2").onclick=()=>{try{localStorage.removeItem("goalgrid")}catch(e){}
+    Object.assign(P,{st:{},focus:null,snaps:[],why:{},goalDate:"",goalSign:"",tasks:[]});saveP();location.href=FREE_GRID_URL}}
 
 /* ===== sheets ===== */
 function openSheet(h){$("#sheet").innerHTML=h;$("#sheet").classList.add("on");$("#shade").classList.add("on")}
