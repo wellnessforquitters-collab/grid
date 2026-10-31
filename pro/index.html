@@ -2815,8 +2815,10 @@ function renderWelcome(app){
   <div class="ph"><p class="kick">✦ you're in</p><h1>here's how<br><em>it works.</em></h1></div>
   ${demoHTML()}
   ${standalone()?"":installHTML()}
-  <button class="btn" id="go">open my grid</button>
-  ${/iphone|ipad|android/i.test(navigator.userAgent)?"":'<button class="btn ghost" id="toph">also open it on my phone</button>'}`;
+  <div class="sec"><div class="sec-h"><b>✦ save your link</b><span>do it now</span></div>
+    <p class="small muted" style="margin:10px 0 0">no account means your grid lives only in this browser. clear your history and it's gone. your link is the backup: it opens your grid on any device, already unlocked.</p></div>
+  <button class="btn ghost" id="toph">${/iphone|ipad|android/i.test(navigator.userAgent)?"save my link":"save my link · open on my phone"}</button>
+  <button class="btn" id="go">open my grid</button>`;
   bindCommon();
   $("#go").onclick=()=>{P.welcomed=true;P.onboarded=true;saveP();render();scrollTo(0,0)};
   const tp=$("#toph");if(tp)tp.onclick=()=>{P.welcomed=true;P.onboarded=true;saveP();openMove()};
