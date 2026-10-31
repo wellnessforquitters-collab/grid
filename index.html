@@ -254,6 +254,7 @@ function gridHTML(highlight){
 }
 /* grid pro preview: the same animation as gridyourgoal.com/pro, with your own grid inside */
 const launch=()=>new Date().toISOString().slice(0,10)<="2026-11-20";
+const hasPro=()=>{try{return !!JSON.parse(localStorage.getItem("gridpro2")||"{}").unlocked}catch(e){return false}};
 function proDemoHTML(){
   const starred=(S.stars||[]).map(id=>{const[p,i]=id.split("-").map(Number);return{a:S.actions[p][i],p:S.pillars[p]}}).filter(x=>x.a);
   const acts=(starred.length?starred:S.actions[0].slice(0,3).map(a=>({a,p:S.pillars[0]}))).slice(0,3);
@@ -335,7 +336,12 @@ function render(focusSearch){
     <div class="start"><h3>start tomorrow with</h3><ol>${starts.map(s=>`<li>${s}</li>`).join("")}</ol></div>
     <div class="plan">${[["day","every day"],["week","every week"],["month","every month"]].map(([k,t])=>`<section><h3>${t} (${groups[k].length})</h3><ul>${groups[k].map(x=>`<li>${x}</li>`).join("")||"<li>nothing here</li>"}</ul></section>`).join("")}</div>
     <p class="closing">your map is ready. welcome to the club.</p>
-    <div class="soon gp">
+    ${hasPro()?`<div class="soon gp">
+      <span class="tag">✦ grid pro ✦</span>
+      <span class="st tl">✦</span><span class="st tr">✦</span><span class="st bl">✦</span><span class="st br">✦</span>
+      <h3 class="gp-h">your grid is ready.<br><em>take it back to grid pro.</em></h3>
+      <a class="gp-btn" id="gopro" href="/pro/">open in grid pro →</a>
+    </div>`:`<div class="soon gp">
       <span class="tag">✦ grid pro ✦</span>
       <span class="st tl">✦</span><span class="st tr">✦</span><span class="st bl">✦</span><span class="st br">✦</span>
       <h3 class="gp-h">you just spent 10 minutes on this.<br><em>don't let it become a screenshot.</em></h3>
@@ -347,7 +353,7 @@ function render(focusSearch){
       </div>
       <a class="gp-btn" id="gopro" href="/pro/">keep my grid alive · ${launch()?"$12":"$19"}</a>
       <p class="gp-e">${launch()?"<s>$19</s> $12 until november 20 · ":""}full refund within 14 days<br>your grid comes with you.</p>
-    </div>
+    </div>`}
     <div class="club"><h3>get new tools first</h3><p>i'm building more goal-setting tools like this one. join the club on substack and you'll get each new one first, for free.</p><a class="main" href="https://thewellnessforquitters.substack.com/subscribe" target="_blank" rel="noopener">join the club</a></div>
     <div class="nav"><button class="ghost" id="back">← edit rhythm</button><button class="main" id="copy">copy my plan</button></div>
     <div class="nav"><button class="ghost" id="restart">start over</button><span class="err" id="err"></span></div>`;
