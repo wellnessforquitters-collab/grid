@@ -55,6 +55,81 @@ button:focus-visible,.chip:focus-visible,.cat:focus-visible,input:focus-visible{
 .cell.hub{color:var(--accent);font-size:clamp(7.5px,1.75vw,12.5px)}
 .cell.goal{color:var(--accent);font-weight:600;font-size:clamp(8px,1.9vw,13.5px)}
 .cell.now{background:var(--chip)}
+/* result page */
+.res-grid{max-width:300px}
+.res-grid .grid{min-width:0}
+.res-grid .cell{font-size:6.5px;padding:1px}
+.res-grid .cell.hub{font-size:7.5px}.res-grid .cell.goal{font-size:8px}
+details.rhythm{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+details.rhythm summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;font-size:16px}
+details.rhythm summary::-webkit-details-marker{display:none}
+details.rhythm summary span{color:var(--muted);font-size:13px;margin-left:auto}
+details.rhythm summary::after{content:"+";font-size:20px;line-height:1}
+details.rhythm[open] summary::after{content:"–"}
+details.rhythm .plan{padding:4px 0 18px}
+.pdemo{border:1px solid var(--line);border-radius:22px;padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px;background:#fff;min-height:350px}
+.pdemo .top{display:flex;justify-content:space-between;align-items:center}
+.pdemo .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.pdemo .dots{display:flex;gap:5px}.pdemo .dots i{width:6px;height:6px;border-radius:50%;background:#ddd}.pdemo .dots i.on{background:var(--fg)}
+.pdemo h4{margin:0;font-weight:500;font-size:22px;letter-spacing:-.02em}
+.pdemo .scr{display:none;flex-direction:column;gap:9px}.pdemo .scr.on{display:flex;animation:pfade .4s}
+@keyframes pfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.pdemo .mg{max-width:220px}
+.pdemo .mg i{transition:background .35s}
+.pdemo .tc{background:#f5f5f4;border-radius:12px;padding:10px 12px}
+.pdemo .tc .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 2px}
+.pdemo .tc .big{font-size:22px;font-weight:500;letter-spacing:-.02em;min-height:26px}
+.pdemo .r{display:flex;justify-content:space-between;align-items:center;font-size:15px;min-height:32px;border-top:1px solid #e3e3e1}
+.pdemo .r:first-of-type{border-top:0}
+.pdemo .ci{width:18px;height:18px;border-radius:50%;border:1.3px solid var(--fg);flex:none;transition:all .25s}
+.pdemo .ci.on{background:var(--accent);border-color:var(--accent)}
+.pdemo .dcard{border:1px solid var(--fg);padding:22px 16px;text-align:center;font-size:17px;line-height:1.35;min-height:120px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.pdemo .dcard .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.pdemo .quad{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--fg);border-left:1px solid var(--fg)}
+.pdemo .quad div{border-right:1px solid var(--fg);border-bottom:1px solid var(--fg);padding:8px 9px;min-height:74px;font-size:14px;line-height:1.3}
+.pdemo .quad .k{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+.pdemo .bars div{display:grid;grid-template-columns:72px 1fr 34px;gap:8px;align-items:center;font-size:13px;padding:4px 0}
+.pdemo .bars s{display:block;height:4px;background:#eee;text-decoration:none;position:relative}
+.pdemo .bars s b{position:absolute;inset:0 auto 0 0;background:var(--accent);width:0;transition:width .9s}
+.pdemo .bars em{font-style:normal;color:var(--muted);text-align:right}
+.pdemo .cap{font-size:14px;color:var(--muted);margin:auto 0 0;min-height:20px}
+.tw::after{content:"|";animation:blink .8s steps(1) infinite;color:var(--accent);margin-left:1px}
+@keyframes blink{50%{opacity:0}}
+.pfeat{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.pfeat span::before{content:"✦ ";color:var(--accent)}
+
+.pdemo{min-height:430px!important}
+.pdemo .g2{display:flex;flex-direction:column;gap:12px}
+.pdemo .g2 .mg{max-width:190px}
+.pdemo .tc .k em{font-style:normal;color:var(--muted);letter-spacing:0;text-transform:none;margin-left:6px}
+.pdemo .tc .line{font-size:15px;min-height:22px}
+.pdemo .ci.kind.on{background:var(--accent)}
+.pdemo .flip{perspective:900px;height:170px}
+.pdemo .fin{position:relative;width:100%;height:100%;transition:transform .8s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.pdemo .flip.on .fin{transform:rotateY(180deg)}
+.pdemo .fb,.pdemo .ff{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px}
+.pdemo .fb{background:repeating-linear-gradient(45deg,#fff 0 9px,#f6f6f6 9px 10px)}
+.pdemo .ff{transform:rotateY(180deg);background:#fff}
+.pdemo .fb .k,.pdemo .ff .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.pdemo .fb .tap{font-size:17px}
+.pdemo .ff .msg{font-size:17px;line-height:1.35}
+.pdemo .ff .nx{font-size:12px;color:var(--muted)}
+.pdemo .fb .s{position:absolute;font-style:normal;font-size:12px;background:#fff;line-height:1;padding:1px}
+.pdemo .fb .a{top:-7px;left:-7px}.pdemo .fb .b{top:-7px;right:-7px}.pdemo .fb .c{bottom:-7px;left:-7px}.pdemo .fb .d{bottom:-7px;right:-7px}
+.pdemo .kv{border-top:1px solid var(--fg)}
+.pdemo .kv div{display:grid;grid-template-columns:96px 1fr;gap:8px;padding:9px 0;border-bottom:1px solid #e6e6e6;font-size:14px;align-items:baseline}
+.pdemo .kv span{font-size:12px;color:var(--muted)}.pdemo .kv b{font-weight:400;min-height:18px}
+.pdemo .steps .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:6px 0 0}
+.pdemo .quad{display:grid!important;grid-template-columns:66px 1fr 1fr!important}
+.pdemo .quad .hd{min-height:0!important;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);padding:6px 8px!important}
+.pdemo .quad .sd{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center}
+.pdemo .apps{border-top:1px solid var(--fg)}
+.pdemo .apps div{display:flex;flex-direction:column;gap:2px;padding:13px 0;border-bottom:1px solid #e6e6e6}
+.pdemo .apps b{font-weight:500;font-size:17px;letter-spacing:-.01em}.pdemo .apps span{font-size:13px;color:var(--muted)}
+.mg{display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1;border-top:1.5px solid var(--fg);border-left:1.5px solid var(--fg)}
+.mg i{border-right:.5px solid #999;border-bottom:.5px solid #999}
+.mg i.br{border-right:1.5px solid var(--fg)}.mg i.bb{border-bottom:1.5px solid var(--fg)}
+.mg i.h{background:#f6f6f6}.mg i.s1{background:#fbdcda}.mg i.s2{background:var(--accent)}
 /* rhythm */
 .pillar-group{display:flex;flex-direction:column;gap:6px}
 .pillar-group h3{margin:6px 0 2px;font-weight:500;color:var(--accent);text-transform:lowercase;font-size:18px}
@@ -253,6 +328,53 @@ function gridHTML(highlight){
   return h+'</div></div>';
 }
 /* grid pro preview: the same animation as gridyourgoal.com/pro, with your own grid inside */
+function pdemoHTML(){let g="";for(let r=0;r<9;r++)for(let c=0;c<9;c++){const b=Math.floor(r/3)*3+Math.floor(c/3),cc=(r%3)*3+c%3;
+  g+=`<i class="${(c%3===2?"br ":"")+(r%3===2?"bb ":"")+(b===4||cc===4?"h":"")}" data-i="${r*9+c}"></i>`}
+  const row=(t,cls)=>`<div class="r"><span data-t="${t}"></span><span class="ci${cls?" "+cls:""}"></span></div>`;
+  return `<div class="pdemo" id="pdemo"><div class="top"><span class="lab">✦ grid pro</span><span class="dots">${"<i></i>".repeat(7)}</span></div>
+  <div class="scr" data-s="0"><h4>your grid.</h4><div class="g2"><div class="mg">${g}</div>
+    <div class="bars">${[["sleep",69],["mind",44],["skin",56],["money",19],["movement",50]].map(([n,p])=>`<div><span>${n}</span><s><b data-w="${p}"></b></s><em>${p}%</em></div>`).join("")}</div></div></div>
+  <div class="scr" data-s="1"><h4>today.</h4><div class="tc"><p class="k">focus</p><div class="big" data-t="sleep"></div></div>
+    <div class="tc"><p class="k">actions</p>${row("same wake-up time")}${row("phone out of bedroom")}${row("no coffee after 2pm")}</div>
+    <div class="tc"><p class="k">rest</p>${row("a walk without your phone")}</div></div>
+  <div class="scr" data-s="2"><h4>today.</h4><div class="tc"><p class="k">gratitude</p><div class="line" data-t="slow morning coffee with mum"></div></div>
+    <div class="tc"><p class="k">one kind thing <em>for someone else</em></p>${row("text a friend who's having a hard week","kind")}</div></div>
+  <div class="scr" data-s="3"><h4>a card every morning.</h4><div class="flip"><div class="fin">
+    <div class="fb"><span class="k">✦ today's card</span><span class="tap">tap to pull it</span><i class="s a">✦</i><i class="s b">✦</i><i class="s c">✦</i><i class="s d">✦</i></div>
+    <div class="ff"><span class="k">✦ ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short"}).toLowerCase()}</span><span class="msg">you don't have to be ready. you just have to start, even badly.</span><span class="nx">a new one tomorrow</span></div></div></div></div>
+  <div class="scr" data-s="4"><h4>the plan.</h4><div class="kv"><div><span>goal</span><b data-t="the healthiest year of my life"></b></div><div><span>by</span><b data-t="20 january 2027 · 81 days left"></b></div><div><span>i'll know when</span><b data-t="i run 5k without stopping"></b></div></div>
+    <div class="steps"><p class="k">one-time steps</p>${row("book a pilates trial")}${row("buy running shoes")}</div></div>
+  <div class="scr" data-s="5"><h4>why you started.</h4><div class="quad"><div class="hd"></div><div class="hd">things</div><div class="hd">feelings</div>
+    <div class="sd">for me</div><div><span data-t="a strong body, glowing skin"></span></div><div><span data-t="calm and proud of myself"></span></div>
+    <div class="sd">for others</div><div><span data-t="energy for the people i love"></span></div><div><span data-t="my sister starts too"></span></div></div></div>
+  <div class="scr" data-s="6"><h4>always with you.</h4><div class="apps">
+    <div><b>an app on your home screen</b><span>no account, no app store</span></div>
+    <div><b>your grid as a wallpaper</b><span>see it every time you unlock</span></div>
+    <div><b>your link, any phone</b><span>move it with a qr code</span></div></div></div>
+  <p class="cap" id="pdc"></p></div>`}
+let pdT=[];
+function runDemo(){pdT.forEach(clearTimeout);pdT=[];const d=$("#pdemo");if(!d)return;
+  const at=(ms,f)=>pdT.push(setTimeout(()=>{if(document.body.contains(d))f()},ms));
+  const caps=["track your progress, every cell and every area","one focus, 3 actions and a bit of rest","gratitude and one kind thing, every day","a random card every morning, a new one tomorrow","your goal, your date, the steps to get there","for the days you want to quit","it lives on your phone, not in your camera roll"];
+  const type=(el,t0,sp=34)=>{const txt=el.dataset.t;el.textContent="";at(t0,()=>el.classList.add("tw"));for(let i=1;i<=txt.length;i++)at(t0+i*sp,()=>{el.textContent=txt.slice(0,i)});at(t0+txt.length*sp+200,()=>el.classList.remove("tw"));return t0+txt.length*sp+250};
+  const show=k=>{d.querySelectorAll(".scr").forEach(x=>x.classList.toggle("on",+x.dataset.s===k));d.querySelectorAll(".dots i").forEach((x,i)=>x.classList.toggle("on",i===k));$("#pdc").textContent=caps[k]};
+  const tick=(r,t)=>at(t,()=>r.querySelector(".ci").classList.add("on"));
+  d.querySelectorAll(".mg i").forEach(x=>x.classList.remove("s1","s2"));d.querySelectorAll("[data-t]").forEach(x=>x.textContent="");d.querySelectorAll(".ci").forEach(x=>x.classList.remove("on"));d.querySelectorAll(".bars b").forEach(x=>x.style.width="0");d.querySelector(".flip").classList.remove("on");
+  at(0,()=>show(0));
+  [0,10,20,2,14,30,50,60,70,64,26,34,46,56,78,72,8,18].forEach((i,n)=>{const el=d.querySelector(`.mg i[data-i="${i}"]`);if(!el||el.classList.contains("h"))return;at(300+n*140,()=>el.classList.add("s1"));if(n%2===0)at(750+n*140,()=>{el.classList.remove("s1");el.classList.add("s2")})});
+  d.querySelectorAll(".bars b").forEach((b,i)=>at(1200+i*250,()=>b.style.width=b.dataset.w+"%"));
+  let t=4300;at(t,()=>show(1));
+  let tt=type(d.querySelector('[data-s="1"] .big'),t+250);
+  d.querySelectorAll('[data-s="1"] .r').forEach((r,i)=>{tt=type(r.querySelector("[data-t]"),tt+80);if(i!==2)tick(r,tt+100)});
+  t=tt+1100;at(t,()=>show(2));
+  tt=type(d.querySelector('[data-s="2"] .line'),t+250);const kr=d.querySelector('[data-s="2"] .r');tt=type(kr.querySelector("[data-t]"),tt+150);tick(kr,tt+150);
+  t=tt+1200;at(t,()=>show(3));at(t+1300,()=>d.querySelector(".flip").classList.add("on"));
+  t=t+4300;at(t,()=>show(4));
+  tt=t+250;d.querySelectorAll('[data-s="4"] .kv [data-t]').forEach(x=>{tt=type(x,tt+60,28)});d.querySelectorAll('[data-s="4"] .r').forEach((r,i)=>{tt=type(r.querySelector("[data-t]"),tt+60,28);if(i===0)tick(r,tt+100)});
+  t=tt+1200;at(t,()=>show(5));
+  tt=t+250;d.querySelectorAll('[data-s="5"] [data-t]').forEach(x=>{tt=type(x,tt+60,30)});
+  t=tt+1600;at(t,()=>show(6));
+  at(t+3800,runDemo)}
 const launch=()=>new Date().toISOString().slice(0,10)<="2026-11-20";
 const hasPro=()=>{try{return !!JSON.parse(localStorage.getItem("gridpro2")||"{}").unlocked}catch(e){return false}};
 function proDemoHTML(){
@@ -331,11 +453,10 @@ function render(focusSearch){
     S.pillars.forEach((pn,p)=>S.actions[p].forEach((a,i)=>groups[S.freq[p+"-"+i]||"week"].push(`${esc(a)} <small>· ${esc(pn)}</small>`)));
     const starts=S.stars.map(id=>{const[p,i]=id.split("-").map(Number);return esc(S.actions[p][i])});
     h=`<h1>your plan for <em>${esc(S.goal)}</em></h1>
-    <p class="hint">1 goal, 8 areas, 64 actions. screenshot it and keep it where you see it every day.</p>
-    ${gridHTML()}
+    <div class="res-grid">${gridHTML()}</div>
     <div class="start"><h3>start tomorrow with</h3><ol>${starts.map(s=>`<li>${s}</li>`).join("")}</ol></div>
-    <div class="plan">${[["day","every day"],["week","every week"],["month","every month"]].map(([k,t])=>`<section><h3>${t} (${groups[k].length})</h3><ul>${groups[k].map(x=>`<li>${x}</li>`).join("")||"<li>nothing here</li>"}</ul></section>`).join("")}</div>
-    <p class="closing">your map is ready. welcome to the club.</p>
+    <details class="rhythm"><summary>all 64 actions<span>${groups.day.length} daily · ${groups.week.length} weekly · ${groups.month.length} monthly</span></summary>
+      <div class="plan">${[["day","every day"],["week","every week"],["month","every month"]].map(([k,t])=>`<section><h3>${t} (${groups[k].length})</h3><ul>${groups[k].map(x=>`<li>${x}</li>`).join("")||"<li>nothing here</li>"}</ul></section>`).join("")}</div></details>
     ${hasPro()?`<div class="soon gp">
       <span class="tag">✦ grid pro ✦</span>
       <span class="st tl">✦</span><span class="st tr">✦</span><span class="st bl">✦</span><span class="st br">✦</span>
@@ -345,12 +466,8 @@ function render(focusSearch){
       <span class="tag">✦ grid pro ✦</span>
       <span class="st tl">✦</span><span class="st tr">✦</span><span class="st bl">✦</span><span class="st br">✦</span>
       <h3 class="gp-h">you just spent 10 minutes on this.<br><em>don't let it become a screenshot.</em></h3>
-      <div class="lframe">${proDemoHTML()}</div>
-      <div class="lget" id="lget">
-        <div><b>watch yourself change</b><span>every cell turns red as a habit becomes yours.</span></div>
-        <div><b>know what to do today</b><span>a focus, three actions and a little rest. one minute.</span></div>
-        <div><b>remember why you started</b><span>your why and your date, one swipe away on the hard days.</span></div>
-      </div>
+      ${pdemoHTML()}
+      <div class="pfeat"><span>track your progress</span><span>today: focus, 3 actions, rest</span><span>gratitude + one kind thing</span><span>a random card every morning</span><span>progress for all 8 areas</span><span>goal, date, countdown</span><span>why you started</span><span>one-time steps</span><span>wallpaper</span><span>works like an app</span><span>move it to any phone</span></div>
       <a class="gp-btn" id="gopro" href="/pro/">keep my grid alive · ${launch()?"$12":"$19"}</a>
       <p class="gp-e">${launch()?"<s>$19</s> $12 until november 20 · ":""}full refund within 14 days<br>your grid comes with you.</p>
     </div>`}
@@ -358,7 +475,7 @@ function render(focusSearch){
     <div class="nav"><button class="ghost" id="back">← edit rhythm</button><button class="main" id="copy">copy my plan</button></div>
     <div class="nav"><button class="ghost" id="restart">start over</button><span class="err" id="err"></span></div>`;
   }
-  el.innerHTML=h; bind(st); syncSteps();
+  el.style.gap=st===TOTAL?"44px":"20px"; el.innerHTML=h; bind(st); syncSteps(); runDemo();
   if(focusSearch){const s=$("#q"); if(s){s.focus();s.setSelectionRange(s.value.length,s.value.length);} }
   save();
 }
