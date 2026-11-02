@@ -203,6 +203,7 @@ input[type=date].in{-webkit-appearance:none;appearance:none;min-height:50px;text
 .qh span{padding-left:12px}
 .quad label{border:1px solid var(--fg);margin:0 -1px -1px 0;padding:12px;display:flex;flex-direction:column;gap:6px;min-width:0;aspect-ratio:1/0.82}
 .quad label .who{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+.quad.qq label{aspect-ratio:auto;min-height:96px}
 .qa{flex:1;width:100%;font:inherit;font-size:15px;line-height:1.35;border:0;padding:0;background:transparent;outline:none;resize:none;color:var(--fg)}
 /* rows with a box or circle */
 .row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:50px;border-bottom:1px solid var(--soft);cursor:pointer}
@@ -2702,7 +2703,7 @@ const AROUND=[0,1,2,3,5,6,7,8];
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d}catch(e){return d}};
 let G=load("goalgrid",null);
 let P=Object.assign({unlocked:false,key:"",st:{},focus:null,snaps:[],checkins:[],onboarded:false,installDone:false,visits:0,trk:{},why:{},goalDate:"",goalSign:"",tasks:[],diary:{},kind:{},page:0,welcomed:false},load("gridpro2",{}));
-["trk","why","diary","kind"].forEach(k=>{if(!P[k])P[k]={}});if(!P.tasks)P.tasks=[];
+["trk","why","diary","kind"].forEach(k=>{if(!P[k])P[k]={}});if(!P.tasks)P.tasks=[];if(!P.quit)P.quit=[];
 const IOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
 /* the grid travels inside the link: #g= from the free grid, #p= personal link with everything */
 const pack=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
@@ -2821,8 +2822,8 @@ function renderWelcome(app){
   <button class="btn ghost" id="toph">${/iphone|ipad|android/i.test(navigator.userAgent)?"save my link":"save my link · open on my phone"}</button>
   <button class="btn" id="go">open my grid</button>`;
   bindCommon();
-  $("#go").onclick=()=>{P.welcomed=true;P.onboarded=true;saveP();render();scrollTo(0,0)};
-  const tp=$("#toph");if(tp)tp.onclick=()=>{P.welcomed=true;P.onboarded=true;saveP();openMove()};
+  $("#go").onclick=()=>{P.welcomed=true;P.onboarded=true;P.seenHarada=true;saveP();render();scrollTo(0,0)};
+  const tp=$("#toph");if(tp)tp.onclick=()=>{P.welcomed=true;P.onboarded=true;P.seenHarada=true;saveP();openMove()};
 }
 
 const QS=new URLSearchParams(location.search),PAID=QS.has("paid"),CHECKOUT_ID=QS.get("checkout_id")||"";
@@ -3046,11 +3047,25 @@ function renderMain(app){
   app.innerHTML=`<div class="appbar"><img class="logo" src="${LOGO}" alt="wellness for quitters">
     <div class="nav"><div class="dots">${PAGES.map((_,k)=>`<i class="${k===i?"on":""}"></i>`).join("")}</div>
     <button id="pp" aria-label="previous">←</button><button id="pn" aria-label="next">→</button></div></div>
-  ${installCard()}
+  ${newCard()}${installCard()}
   <div class="pages" id="pages"><div class="ptrack" id="ptr">${pageGrid()}${pageDay()}${pagePlan()}</div></div>`;
-  bindInstall();bindPages();bindGrid();bindDay();bindPlan();
+  bindInstall();bindNew();bindPages();bindGrid();bindDay();bindPlan();
 }
+function newCard(){if(P.seenHarada)return"";
+  return `<div class="box newbox"><span class="tag">✦ new</span>
+  <p style="margin:0"><b>the full harada method is here.</b> your plan now has milestones and <b>how i'll quit</b>, so you know what to do on the days you want to stop.</p>
+  <div style="display:flex;gap:16px;align-items:center"><button class="btn" id="newgo">show me</button><button class="link" id="newx">got it</button></div></div>`}
+function bindNew(){const g=$("#newgo"),x=$("#newx");
+  if(g)g.onclick=()=>{P.seenHarada=true;P.page=2;saveP();render();setTimeout(()=>{const q=$("#quitsec");if(q)q.scrollIntoView({behavior:"smooth",block:"start"})},350)};
+  if(x)x.onclick=()=>{P.seenHarada=true;saveP();keep()}}
 
+const QPH=[["the alarm goes off and it's still dark","shoes on, decide after 5 minutes"],["after a bad day, \u201cit's just not for me\u201d","do the 10-minute version"],["a crazy busy week","one action instead of three"]];
+function quitHTML(){const Q=P.quit;
+  return `<div class="sec" id="quitsec"><div class="sec-h"><b>how i'll quit</b><span>plan it before it happens</span></div>
+    <div class="qh"><span>when i want to quit</span><span style="color:var(--acc)">instead i'll</span></div>
+    <div class="quad qq" style="margin-top:0">${[0,1,2].map(k=>{const q=Q[k]||{};
+      return `<label><textarea class="qa" data-q="${k}" data-f="m" maxlength="70" placeholder="${esc(QPH[k][0])}">${esc(q.m||"")}</textarea></label><label><textarea class="qa" data-q="${k}" data-f="i" maxlength="70" placeholder="${esc(QPH[k][1])}">${esc(q.i||"")}</textarea></label>`}).join("")}</div>
+  </div>`}
 function pagePlan(){const W=P.why,L=left(),done=P.tasks.filter(x=>x.done).length;
   const q=(k,who,ph)=>`<label><span class="who">${who}</span><textarea class="qa" data-why="${k}" placeholder="${ph}">${esc(W[k]||"")}</textarea></label>`;
   return `<div class="pg">
@@ -3064,9 +3079,10 @@ function pagePlan(){const W=P.why,L=left(),done=P.tasks.filter(x=>x.done).length
       <div class="qh"><span>things</span><span>feelings</span></div>
       <div class="quad" style="margin-top:0">${q("me_t","for me","a strong body, savings")}${q("me_f","for me","calm, proud of myself")}${q("ot_t","for others","more time with family")}${q("ot_f","for others","they feel inspired")}</div>
     </div>
-    <div class="sec"><div class="sec-h"><b>one-time steps</b><span>${P.tasks.length?done+" of "+P.tasks.length:"things you do once"}</span></div>
+    ${quitHTML()}
+    <div class="sec"><div class="sec-h"><b>milestones &amp; steps</b><span>${P.tasks.length?done+" of "+P.tasks.length:"smaller goals, each with a date"}</span></div>
       ${P.tasks.map(x=>{const late=!x.done&&x.d&&x.d<today();return`<div class="row${x.done?" done":""}" data-t="${x.id}"><span class="bx"></span><span class="t">${esc(x.t)}</span><span class="m${late?" late":""}">${x.d?nice(x.d):""}</span></div>`}).join("")}
-      <div class="addln"><span class="plus">+</span><input class="in" id="tn" maxlength="60" placeholder="add a step" autocomplete="off"><input type="date" id="td" aria-label="by when"></div>
+      <div class="addln"><span class="plus">+</span><input class="in" id="tn" maxlength="60" placeholder="add a milestone or a step" autocomplete="off"><input type="date" id="td" aria-label="by when"></div>
     </div>
   </div>`}
 
@@ -3097,6 +3113,7 @@ function bindGrid(){
 }
 let saveT;const soft=()=>{clearTimeout(saveT);saveT=setTimeout(()=>saveP(),350)};
 function bindPlan(){
+  document.querySelectorAll("[data-q]").forEach(t=>t.oninput=()=>{const k=+t.dataset.q;P.quit[k]=P.quit[k]||{};P.quit[k][t.dataset.f]=t.value;soft()});
   document.querySelectorAll("[data-why]").forEach(t=>t.oninput=()=>{P.why[t.dataset.why]=t.value;soft()});
   $("#gd").onchange=()=>{P.goalDate=$("#gd").value;saveP();const L=left();$("#lft").textContent=L===null?"":L>0?L+" days left":L===0?"it's the day":"past your date";
     const k=document.querySelector(".pg .kick");if(k)k.innerHTML=k.innerHTML.replace(/ · .*$/,"")+(L!==null?` · ${L>0?L+" days left":L===0?"it's the day":"past your date"}`:"")};
