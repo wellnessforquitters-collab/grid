@@ -405,14 +405,14 @@ const MSG=['reading your answers','finding your patterns','looking for your blin
 function loading(){bar();document.getElementById('nav').style.display='none';let k=0;
  app.innerHTML=`<div class="stage"><div class="q load"><svg viewBox="0 0 300 80" class="lw"><path d="M5 60 C40 60 50 15 85 18 S130 55 160 50 S205 20 230 28 S270 70 295 66"/></svg><h2 id="lm">${MSG[0]}</h2><p class="sub">your report opens here in a few seconds. keep this page open.</p></div></div>`;
  return setInterval(()=>{k=(k+1)%MSG.length;const m=document.getElementById('lm');if(m)m.textContent=MSG[k]},2600);}
-async function fetchReport(id){const t=loading();let tries=0;
+let ERRD='';async function fetchReport(id){const t=loading();let tries=0;
  try{const c=localStorage.getItem('rep:'+id);if(c){clearInterval(t);return showReport(JSON.parse(c))}}catch(e){}
  while(tries++<40){
   try{const r=await fetch(API+'/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({checkout_id:id,answers:answersText()})});
    if(r.status===200){const rep=await r.json();clearInterval(t);try{localStorage.setItem('rep:'+id,JSON.stringify(rep))}catch(e){}return showReport(rep)}
-   if(r.status!==202)break;}catch(e){}
+   if(r.status!==202){try{const j=await r.json();ERRD=(j.error||'')+(j.detail?': '+j.detail:'')}catch(e){ERRD='status '+r.status}break;}}catch(e){ERRD='no connection: '+e.message}
   await new Promise(z=>setTimeout(z,3000));}
- clearInterval(t);app.innerHTML=`<div class="stage"><div class="q"><h2>your report is taking longer than usual</h2><p class="sub">your payment went through and your report is safe. refresh this page in a minute, or write to wellnessforquitters@gmail.com and we'll send it to you.</p><div class="go"><button class="ok" onclick="location.reload()">refresh</button></div></div></div>`;}
+ clearInterval(t);app.innerHTML=`<div class="stage"><div class="q"><h2>your report is taking longer than usual</h2><p class="sub">your payment went through and your report is safe. refresh this page in a minute, or write to wellnessforquitters@gmail.com and we'll send it to you.</p><p style="font-size:12px;color:#bbb;margin-top:14px;text-transform:none">${esc(ERRD)}</p><div class="go"><button class="ok" onclick="location.reload()">refresh</button></div></div></div>`;}
 function showReport(rep){const R=analyse();document.getElementById('nav').style.display='none';document.querySelector('#bar i').style.width='100%';
 
  app.innerHTML=`<div class="res rep2">
