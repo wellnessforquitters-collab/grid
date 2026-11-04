@@ -2784,6 +2784,7 @@ function gridHTML(st,mini){
 /* ===== screens ===== */
 function render(){
   const app=$("#app");app.classList.toggle("land",!P.unlocked&&!keyScreen);
+  if(standalone()&&!hasGrid()&&!keyScreen) return renderNoGrid(app);
   if(!P.unlocked) return renderLocked(app);
   if(!hasGrid()) return renderNoGrid(app);
   if(!P.welcomed) return renderWelcome(app);
@@ -2810,7 +2811,7 @@ function installHTML(){
   return `<div class="sec"><div class="sec-h"><b>✦ make it an app</b><span>10 seconds</span></div><div class="inst">
     <div class="r"><span>iphone</span><span>in safari tap <span class="k">⬆</span> share, then <b style="font-weight:500">add to home screen</b></span></div>
     <div class="r"><span>android</span><span>in chrome tap <span class="k">⋮</span>, then <b style="font-weight:500">install app</b></span></div>
-    <div class="r"><span>then</span><span>open grid pro from your home screen, like any app</span></div></div></div>`}
+    <div class="r"><span>then</span><span>open grid pro from your home screen. if it asks for your grid, paste your saved link once</span></div></div></div>`}
 
 function renderWelcome(app){
   app.innerHTML=`${header()}
@@ -2910,12 +2911,25 @@ function renderLocked(app){
   document.querySelectorAll(".soon").forEach(b=>b.onclick=()=>toast("opening very soon ✦"));
 }
 function renderNoGrid(app){
+  const sa=standalone();
   app.innerHTML=`${header()}
-  <div><p class="kick">✦ grid pro</p><h1>first,<br><em>make your grid.</em></h1></div>
-  <p class="muted" style="margin:0">already made one? open the free grid in the same browser and tap <b style="color:var(--fg)">get grid pro</b>. your grid comes with you.</p>
-  <a class="btn" href="${FREE_GRID_URL}">go to my grid</a>`;
+  <div><p class="kick">✦ grid pro</p><h1>${sa?"bring your grid<br><em>into the app.</em>":"first,<br><em>make your grid.</em>"}</h1></div>
+  ${sa?`<p class="muted" style="margin:0">the home screen app keeps its own storage, so it needs your grid once. in safari or chrome, open grid pro, tap <b style="color:var(--fg)">save my link</b>, copy it and paste it here.</p>`
+     :`<p class="muted" style="margin:0">already made one? open the free grid in the same browser and tap <b style="color:var(--fg)">get grid pro</b>. your grid comes with you.</p>`}
+  <div class="sec"><div class="sec-h"><b>already have grid pro?</b><span>paste your saved link</span></div>
+    <div class="keyin" style="margin-top:12px"><input id="rlink" placeholder="paste your link" autocomplete="off" spellcheck="false"><button class="btn" id="rgo">restore</button></div></div>
+  ${sa?"":`<a class="btn ghost" href="${FREE_GRID_URL}">go to my grid</a>`}`;
   bindCommon();
+  $("#rgo").onclick=()=>restoreFrom($("#rlink").value);$("#rlink").onkeydown=e=>{if(e.key==="Enter")restoreFrom($("#rlink").value)};
 }
+async function restoreFrom(v){v=(v||"").trim();const i=v.indexOf("#");if(i<0)return toast("that doesn't look like your link");
+  const h=v.slice(i);
+  try{if(h.startsWith("#z=")){history.replaceState(null,"",location.pathname+h);await fromZ()}
+    else if(h.startsWith("#p="))applyLink(unpack(h.slice(3)));
+    else if(h.startsWith("#g=")){const g=unpack(h.slice(3));if(g&&g.goal){G=g;saveG()}}
+    else return toast("that doesn't look like your link")}catch(e){return toast("this link didn't work, copy it again")}
+  if(!hasGrid())return toast("this link didn't work, copy it again");
+  saveP();toast("your grid is back ✦");render();scrollTo(0,0)}
 
 /* ===== main: the grid, then two pages ===== */
 const CARDS=[
@@ -3245,7 +3259,7 @@ const standalone=()=>matchMedia("(display-mode: standalone)").matches||navigator
 function installCard(){if(standalone()||P.installDone||P.visits<2)return"";
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
   return `<div class="box"><span class="tag">✦ one tip</span>
-  <p style="margin:0">keep your grid one tap away: ${ios?"tap <b>share</b> in safari, then <b>add to home screen</b>.":"add it to your home screen."}</p>
+  <p style="margin:0">keep your grid one tap away: ${ios?"tap <b>save my link</b> and copy it, then tap <b>share</b> in safari and <b>add to home screen</b>. if the app asks for your grid, paste the link once.":"add it to your home screen."}</p>
   <div style="display:flex;gap:16px;align-items:center">${!ios&&deferred?'<button class="btn" id="inst">add</button>':''}<button class="link" id="instx">${ios?"done":"later"}</button></div></div>`}
 function bindInstall(){const a=$("#inst"),x=$("#instx");
   if(a)a.onclick=async()=>{deferred.prompt();await deferred.userChoice;P.installDone=true;saveP();render()};
