@@ -258,6 +258,25 @@ input[type=date].in{-webkit-appearance:none;appearance:none;min-height:50px;text
 .pbar .t i{position:absolute;left:0;top:0;bottom:0;background:var(--acc)}
 .pbar .p{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 /* ===== today: soft cards ===== */
+.dstat{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dstat div{background:#f5f5f4;border-radius:16px;padding:14px 16px}
+.dstat b{display:block;font-size:34px;font-weight:500;letter-spacing:-.03em;color:var(--acc);line-height:1}.dstat span{font-size:13px;color:var(--muted)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;text-align:center}
+.cal>span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.cal .cd{position:relative;aspect-ratio:1;border:0;background:none;padding:0;font:inherit;cursor:pointer;display:grid;place-items:center}
+.cal .cd i{position:absolute;inset:3px;border-radius:50%;border:1.5px solid var(--soft);background:conic-gradient(var(--acc) calc(var(--p)*1%),transparent 0)}
+.cal .cd b{position:relative;font-size:12px;font-weight:500;background:var(--bg);border-radius:50%;width:62%;aspect-ratio:1;display:grid;place-items:center}
+.cal .cd.em i{background:none}.cal .cd.em b{color:var(--muted);font-weight:400}.cal .cd.fut{opacity:.35}
+.cal .cd.td i{border-color:var(--fg)}.cal .cd:disabled{cursor:default}
+.calnav{display:flex;gap:4px}.calnav button{border:1px solid var(--fg);background:var(--bg);width:30px;height:26px;cursor:pointer;font:inherit}.calnav button:disabled{opacity:.25}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:4px 0 2px}
+.wk button{background:none;border:0;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:5px;font:inherit;color:var(--muted);font-size:11px;cursor:pointer;text-transform:lowercase}
+.wk i{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--soft);display:block;background:conic-gradient(var(--acc) calc(var(--p)*1%),transparent 0)}
+.wk button.td i{border-color:var(--fg)}.wk button.td{color:var(--fg)}
+.wk button.em i{background:none}
+.wk button:disabled{cursor:default;opacity:.5}
+.dh{display:flex;flex-direction:column;gap:8px;margin:2px 0}.dh .r{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--soft);font-size:15px}
+.dh .r>span:first-child{color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding-top:2px;flex:none}
+.dh .r>span:last-child{text-align:right}.dh .ok{color:var(--acc)}.dh .no{color:var(--muted)}
 .tcs{display:flex;flex-direction:column;gap:10px}
 .tc{background:#f5f5f4;border-radius:16px;padding:16px 16px 14px;display:flex;flex-direction:column}
 .tk{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px}
@@ -2994,7 +3013,7 @@ const CARDS=[
 "make it easy. make it obvious. make it yours.",
 "you started this for a reason. that reason is still true."];
 
-const PAGES=["your grid","today","the plan"];
+const PAGES=["your grid","today","the plan","your days"];
 const left=()=>P.goalDate?daysBetween(today(),P.goalDate):null;
 const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return iso(d)};
 const addDays=(k,n)=>{const d=new Date(k+"T12:00");d.setDate(d.getDate()+n);return iso(d)};
@@ -3032,6 +3051,42 @@ const REST=["a walk without your phone","20-minute nap","bath and an early night
 let openK=null; // which today card shows its options
 const D=()=>P.days[today()]||(P.days[today()]={focus:"",actions:[],rest:{t:"",done:false},grat:"",kind:{t:"",done:false}});
 function yesterdayFocus(){const y=P.days[addDays(today(),-1)];return y&&y.focus&&!(P.days[today()]||{}).focus?y.focus:""}
+
+/* last 7 days: how much of each day got done */
+function dayScore(x){if(!x)return -1;const items=[...(x.actions||[]).map(a=>a.done),...(x.rest&&x.rest.t?[x.rest.done]:[]),...(x.kind&&(x.kind.t||"").trim()?[x.kind.done]:[])];
+  if(!items.length&&!x.focus&&!(x.grat||"").trim())return -1;if(!items.length)return 0;return Math.round(items.filter(Boolean).length/items.length*100)}
+function openDay(d){const x=P.days[d];if(!x)return;
+  const row=(l,v)=>`<div class="r"><span>${l}</span><span>${v}</span></div>`;
+  const acts=(x.actions||[]).map(a=>`<span class="${a.done?"ok":"no"}">${a.done?"✓ ":""}${esc(a.t)}</span>`).join("<br>")||"–";
+  openSheet(`<h2>${DAYS[new Date(d+"T12:00").getDay()]} ${nice(d)}</h2><div class="dh">
+    ${row("focus",esc(x.focus||"–"))}${row("actions",acts)}
+    ${row("rest",x.rest&&x.rest.t?`<span class="${x.rest.done?"ok":"no"}">${x.rest.done?"✓ ":""}${esc(x.rest.t)}</span>`:"–")}
+    ${row("gratitude",esc((x.grat||"").trim()||"–"))}
+    ${row("kind thing",x.kind&&(x.kind.t||"").trim()?`<span class="${x.kind.done?"ok":"no"}">${x.kind.done?"✓ ":""}${esc(x.kind.t)}</span>`:"–")}</div>
+    <button class="btn ghost" id="dx">close</button>`);$("#dx").onclick=closeSheet}
+
+/* page 4: your days, a calendar of what got done (read only) */
+let calM=null;
+function pageDays(){const t=today();if(!calM)calM=t.slice(0,7);
+  const [y,m]=calM.split("-").map(Number),first=new Date(y,m-1,1),n=new Date(y,m,0).getDate(),lead=(first.getDay()+6)%7;
+  const sc=d=>d===t?dayScore(D()):dayScore(P.days[d]);
+  let cells="";for(let i=0;i<lead;i++)cells+=`<span></span>`;
+  for(let k=1;k<=n;k++){const d=`${y}-${String(m).padStart(2,"0")}-${String(k).padStart(2,"0")}`,v=d>t?-2:sc(d);
+    cells+=`<button class="cd${v<0?" em":""}${d===t?" td":""}${d>t?" fut":""}" data-cday="${d}" ${v<0?"disabled":""}><i style="--p:${Math.max(v,0)}"></i><b>${k}</b></button>`}
+  let streak=0;for(let k=0;k<400;k++){const d=addDays(t,-k),v=sc(d);if(v>0)streak++;else if(k===0)continue;else break}
+  const mdays=Object.keys(P.days).filter(d=>d.startsWith(calM)&&sc(d)>0).length;
+  const title=first.toLocaleDateString("en-GB",{month:"long",year:"numeric"}).toLowerCase();
+  return `<div class="pg">
+    <div class="ph"><p class="kick">✦ your days</p><h1>everything<br><em>you've done.</em></h1></div>
+    <p class="small muted" style="margin:0">nothing to fill in here. it saves itself as you tick things off on today.</p>
+    <div class="dstat"><div><b>${streak}</b><span>days in a row</span></div><div><b>${mdays}</b><span>active days in ${first.toLocaleDateString("en-GB",{month:"long"}).toLowerCase()}</span></div></div>
+    <div class="sec"><div class="sec-h"><b>${title}</b><span class="calnav"><button id="cpv" aria-label="previous month">←</button><button id="cnx" aria-label="next month" ${calM>=t.slice(0,7)?"disabled":""}>→</button></span></div>
+      <div class="cal"><span>m</span><span>t</span><span>w</span><span>t</span><span>f</span><span>s</span><span>s</span>${cells}</div>
+      <p class="small muted" style="margin:10px 0 0">the more you tick off, the more a day fills with red. tap a day to see it.</p></div>
+  </div>`}
+function bindDays(){document.querySelectorAll("[data-cday]").forEach(b=>b.onclick=()=>{const d=b.dataset.cday;if(d===today()){if(window._goPage)window._goPage(1);return}openDay(d)});
+  const pv=$("#cpv"),nx=$("#cnx");const shift=k=>{const[y,m]=calM.split("-").map(Number),d=new Date(y,m-1+k,1);calM=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;keep()};
+  if(pv)pv.onclick=()=>shift(-1);if(nx)nx.onclick=()=>shift(1)}
 function pageDay(){const t=today(),d=new Date(),x=P.days[t]||{focus:"",actions:[],rest:{t:"",done:false},grat:"",kind:{t:"",done:false}};
   const fi=G.pillars.indexOf(x.focus),pool=fi>=0?G.actions[fi]:G.actions.flat(),used=x.actions.map(a=>a.t);
   const sugg=pool.filter(a=>!used.includes(a)).slice(0,8),yf=yesterdayFocus();
@@ -3062,8 +3117,8 @@ function renderMain(app){
     <div class="nav"><div class="dots">${PAGES.map((_,k)=>`<i class="${k===i?"on":""}"></i>`).join("")}</div>
     <button id="pp" aria-label="previous">←</button><button id="pn" aria-label="next">→</button></div></div>
   ${newCard()}${installCard()}
-  <div class="pages" id="pages"><div class="ptrack" id="ptr">${pageGrid()}${pageDay()}${pagePlan()}</div></div>`;
-  bindInstall();bindNew();bindPages();bindGrid();bindDay();bindPlan();
+  <div class="pages" id="pages"><div class="ptrack" id="ptr">${pageGrid()}${pageDay()}${pagePlan()}${pageDays()}</div></div>`;
+  bindInstall();bindNew();bindPages();bindGrid();bindDay();bindPlan();bindDays();
 }
 function newCard(){if(P.seenHarada)return"";
   return `<div class="box newbox"><span class="tag">✦ new</span>
@@ -3102,11 +3157,11 @@ function pagePlan(){const W=P.why,L=left(),done=P.tasks.filter(x=>x.done).length
 
 function bindPages(){const tr=$("#ptr"),v=$("#pages");
   const fit=()=>{const pg=tr.children[P.page||0];if(pg)v.style.height=pg.offsetHeight+"px"};
-  const go=(i,anim=true)=>{i=Math.max(0,Math.min(2,i));const moved=i!==(P.page||0);P.page=i;saveP(false);
+  const go=(i,anim=true)=>{i=Math.max(0,Math.min(PAGES.length-1,i));const moved=i!==(P.page||0);P.page=i;saveP(false);
     tr.style.transition=anim?"":"none";v.style.transition=anim?"":"none";tr.style.transform=`translateX(${-100*i}%)`;fit();
     document.querySelectorAll(".dots i").forEach((d,k)=>d.classList.toggle("on",k===i));
-    $("#pp").disabled=i===0;$("#pn").disabled=i===2;if(moved&&anim)scrollTo({top:0,behavior:"smooth"})};
-  go(P.page||0,false);window._fit=fit;
+    $("#pp").disabled=i===0;$("#pn").disabled=i===PAGES.length-1;if(moved&&anim)scrollTo({top:0,behavior:"smooth"})};
+  go(P.page||0,false);window._fit=fit;window._goPage=go;
   $("#pp").onclick=()=>go(P.page-1);$("#pn").onclick=()=>go(P.page+1);
   let x0=null,y0=null;
   tr.addEventListener("touchstart",e=>{if(e.target.closest("input,textarea"))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
